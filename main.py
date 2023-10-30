@@ -103,13 +103,57 @@ def show_license(root):
     This License applies solely to the Software and does not affect any other portion of your project not covered by this License.
     
     For a detailed version of the license terms, please visit the official page of the Creative Commons license CC-BY-NC-SA 4.0.
-    © 2023 Gabriel Unsinn
+    
+    © 2023 Gabriel Unsinn / Github: https://github.com/coffeelack
     """
     license_window = tk.Toplevel(root)
     license_window.title("License")
     license_label = tk.Label(license_window, text=license_text, justify=tk.LEFT)
     license_label.pack(padx=10, pady=10)
     license_window.iconbitmap('Shell-Icon.ico')
+
+def show_help(root):
+    help_text = """
+    File Indexer - Help
+
+    Welcome to the File Indexer application! This tool allows you to index a folder, search for files, and perform various operations on them.
+    
+    Indexing a Folder:
+    
+    Click the "Index Folder" button.
+    Select the folder you want to index.
+    The application will recursively count the number of files and directories inside the selected folder.
+    Searching for Files:
+    
+    Enter a search term in the "Search" field.
+    Optionally, check the "Search Inside Files" box to search within the content of Excel files.
+    Click the "Search" button.
+    The application will display a list of files that match the search criteria.
+    Opening Files or Paths:
+    
+    Select a file from the search results.
+    Click either "Open File" to open the file directly or "Open Path" to open the file's containing folder.
+    Viewing License Information:
+    
+    Click the "View License" button to view the software's licensing details.
+    Viewing Help Information:
+    
+    Click the "Help" button to view this help text.
+    Quitting the Program:
+    
+    Click the "Quit" button to exit the application.
+    Note: Please ensure that you have proper permissions to access and modify the files in the indexed folder.
+    
+    For further assistance or inquiries, refer to the "View License" section or contact the author.
+    
+    © 2023 Gabriel Unsinn / Github: https://github.com/coffeelack
+    """
+    help_window = tk.Toplevel(root)
+    help_window.title("Help")
+    help_label = tk.Label(help_window, text=help_text, justify=tk.LEFT)
+    help_label.pack(padx=10, pady=10)
+    help_window.iconbitmap('Shell-Icon.ico')
+
 
 def main():
     # Declare global variables
@@ -183,6 +227,10 @@ def main():
     # Create widget for displaying the license
     license_button = tk.Button(frame, text="View License", command=lambda: show_license(root))
     license_button.pack(side=tk.LEFT, padx=(10, 0))
+
+    # Create widget for displaying the help
+    help_button = tk.Button(frame, text="Help", command=lambda: show_help(root))
+    help_button.pack(side=tk.LEFT, padx=(5, 10))
 
     # Initialize variables
     indexed_folder = ""
