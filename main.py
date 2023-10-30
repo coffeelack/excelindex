@@ -6,7 +6,7 @@ from openpyxl import load_workbook
 
 # Global variables
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
-    indexed_folder_label, index_thread
+    search_inside_dirs, indexed_folder_label, index_thread
 
 found_files = []
 
@@ -77,18 +77,19 @@ def search_files(result_listbox):
     # Clear the listbox
     result_listbox.delete(0, tk.END)
 
-    # Keep track of processed files
-    processed_files = set()
+    # Keep track of processed files and directories
+    processed_items = set()
     number = 1
-    # Search for files in the indexed folder
+
+    # Search for files and directories in the indexed folder
     for root, dirs, files in os.walk(indexed_folder):
-        for item in files:
+        for item in (dirs + files):  # Include both directories and files
             item_path = os.path.join(root, item)
 
-            # Only search for Excel files with the specified extension
-            if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
+            # Check if search term should be searched in files
+            if search_inside_files.get() and os.path.isfile(item_path) and item_path.endswith('.xlsx'):
                 try:
-                    if item not in processed_files:
+                    if item not in processed_items:
                         wb = load_workbook(item_path, read_only=True)
                         found = False
                         for sheet in wb:
@@ -97,7 +98,7 @@ def search_files(result_listbox):
                                     if search_term in str(cell.value).lower():
                                         result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
                                         number += 1
-                                        processed_files.add(item)  # Add file to processed set
+                                        processed_items.add(item)  # Add file to processed set
                                         found = True
                                         break
                                 if found:
@@ -107,8 +108,21 @@ def search_files(result_listbox):
                 except Exception as e:
                     print(f"Error while processing {item}: {e}")
 
+            # Check if search term should be searched in directories
+            if search_inside_dirs.get() and search_term in item.lower() and os.path.isdir(item_path):
+                result_listbox.insert(tk.END, f"{number} | Directory: {item}  |||  Path: {item_path}")
+                number += 1
+
+            # Include item in the search if both search_inside_files and search_inside_dirs are 0
+            if not search_inside_files.get() and not search_inside_dirs.get() and search_term in item.lower():
+                if item.endswith('.xlsx'):
+                    result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
+                    number += 1
+
     if result_listbox.size() == 0:
-        messagebox.showinfo("No Matches Found", "No files matching the search term were found.")
+        messagebox.showinfo("No Matches Found", "No files or directories matching the search term were found.")
+
+
 
 # Function to start the search thread
 def start_search_thread(result_listbox):
@@ -119,21 +133,21 @@ def start_search_thread(result_listbox):
 def open_file(result_listbox=None):
     selected_item = result_listbox.get(tk.ACTIVE)
     if selected_item:
-        file_path = selected_item.split("| Path: ")[-1].strip()
+        file_path = selected_item.split("|||  Path: ")[-1].strip()
+        print(file_path)
         os.startfile(file_path)
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open.")
 
-
 # Function to open containing folder of selected file
-def open_path(result_listbox=None):
+def open_path(result_listbox):
     selected_item = result_listbox.get(tk.ACTIVE)
     if selected_item:
-        file_path = selected_item.split("| Path: ")[-1].strip()
+        file_path = selected_item.split("|||  Path: ")[-1].strip()
+        print(file_path)
         os.startfile(os.path.dirname(file_path))
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open the path.")
-
 
 # Function to display license information
 def show_license(root):
@@ -219,7 +233,7 @@ def show_help(root):
 def main():
     # Declare global variables
     global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
-        indexed_folder_label
+        search_inside_dirs, indexed_folder_label
 
     # Create GUI
     root = tk.Tk()
@@ -250,12 +264,25 @@ def main():
     search_entry = tk.Entry(root)
     search_entry.pack()
 
+    # Create widget frame for the following two buttons
+    checkbox_frame = tk.Frame(root)
+    checkbox_frame.pack()
+
     # Set search_inside_files to 1 to make the checkbox checked by default
     search_inside_files = tk.IntVar(value=1)
 
     # Create widget so that the user can choose whether to search inside the files or not
-    search_inside_files_checkbox = tk.Checkbutton(root, text="Search Inside Files", variable=search_inside_files)
-    search_inside_files_checkbox.pack()
+    search_inside_files_checkbox = tk.Checkbutton(checkbox_frame, text="Search Inside Files",
+                                                  variable=search_inside_files)
+    search_inside_files_checkbox.pack(side=tk.LEFT, padx=(10, 0))
+
+    # Set search_inside_dirs to 0 to make the checkbox checked by default
+    search_inside_dirs = tk.IntVar(value=0)
+
+    # Create widget so that the user can choose whether to search inside directory names or not
+    search_inside_dirs_checkbox = tk.Checkbutton(checkbox_frame, text="Search Inside Directories",
+                                                 variable=search_inside_dirs)
+    search_inside_dirs_checkbox.pack(side=tk.RIGHT, padx=(10, 0))
 
     # Create widget frame for the following two buttons
     button_frame = tk.Frame(root)
