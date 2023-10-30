@@ -110,7 +110,7 @@ def show_license(root):
     license_window.title("License")
     license_label = tk.Label(license_window, text=license_text, justify=tk.LEFT)
     license_label.pack(padx=10, pady=10)
-    license_window.iconbitmap('AMETRAS-dms-Icon.ico')
+    license_window.iconbitmap('Shell-Icon.ico')
 
 def main():
     global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, indexed_folder_label
@@ -120,7 +120,7 @@ def main():
     root.minsize(240, 300)
     root.title("File Indexer")
 
-    root.iconbitmap('AMETRAS-dms-Icon.ico')
+    root.iconbitmap('Shell-Icon.ico')
 
     indexed_folder_label = tk.Label(root, text="")
     indexed_folder_label.pack()
@@ -162,7 +162,7 @@ def main():
     frame = tk.Frame(root)
     frame.pack(pady=10)
 
-    name_label = tk.Label(frame, text="(c) 2023 Gabriel Unsinn")
+    name_label = tk.Label(frame, text="© 2023 Gabriel Unsinn")
     name_label.pack(side=tk.LEFT)
 
     license_button = tk.Button(frame, text="View License", command=lambda: show_license(root))
