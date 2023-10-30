@@ -85,13 +85,13 @@ def show_license(root):
 
     Diese Software ist lizenziert unter der Creative Commons Namensnennung - Nicht-kommerziell - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz.
     
-    Sie dürfen:
+    Sie haben folgende Freiheiten:
     
     Die Software für jeden legalen Zweck nutzen, auch kommerziell.
     Die Software verändern und anpassen.
     Die Software weitergeben.
     
-    Unter folgenden Bedingungen:
+    Dieser Lizenz müssen Sie folgende Bedingungen entnehmen:
     
     Namensnennung: Sie müssen den Namen des Autors/der Autorin in der von ihm/ihr festgelegten Weise nennen.
     Nicht-kommerziell: Sie dürfen diese Software nicht für kommerzielle Zwecke nutzen.
