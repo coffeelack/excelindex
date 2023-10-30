@@ -88,6 +88,8 @@ def main():
     root.minsize(240, 300)
     root.title("File Indexer")
 
+    root.iconbitmap('AMETRAS-dms-Icon.ico')
+
     index_button = tk.Button(root, text="Index Folder", command=index_folder)
     index_button.pack()
 
