@@ -4,7 +4,8 @@ from tkinter import filedialog, messagebox
 from openpyxl import load_workbook
 
 # Global variables
-global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, indexed_folder_label
+global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
+    indexed_folder_label
 
 # Function to index a folder
 def index_folder(root):
@@ -111,16 +112,17 @@ def show_license(root):
 
     This license requires you to read the following terms and conditions:
 
-    Attribution: You must credit the author's name in the manner specified by him/her.
-    Non-Commercial: You may not use this software for commercial purposes.
-    Share Alike: If you modify, modify, or use the Software as the basis for new software, you must distribute your contributions under the same license as the original.
-    Disclaimer:
-    The Software is provided “as is” without warranty of any kind. The author is not liable for any damage resulting from the use of this software.
+    Attribution: You must credit the author's name in the manner specified by him/her. Non-Commercial: You may not 
+    use this software for commercial purposes. Share Alike: If you modify, modify, or use the Software as the basis 
+    for new software, you must distribute your contributions under the same license as the original. Disclaimer: The 
+    Software is provided “as is” without warranty of any kind. The author is not liable for any damage resulting from 
+    the use of this software.
 
-    A notice:
-    This License applies solely to the Software and does not affect any other portion of your project not covered by this License.
+    A notice: This License applies solely to the Software and does not affect any other portion of your project not 
+    covered by this License.
 
-    For a detailed version of the license terms, please visit the official page of the Creative Commons license CC-BY-NC-SA 4.0.
+    For a detailed version of the license terms, please visit the official page of the Creative Commons license 
+    CC-BY-NC-SA 4.0.
 
     © 2023 Gabriel Unsinn / Github: https://github.com/coffeelack
     """
@@ -135,7 +137,8 @@ def show_help(root):
     help_text = """
     File Indexer - Help
 
-    Welcome to the File Indexer application! This tool allows you to index a folder, search for files, and perform various operations on them.
+    Welcome to the File Indexer application! This tool allows you to index a folder, search for files, and perform 
+    various operations on them.
 
     Indexing a Folder:
 
@@ -176,7 +179,8 @@ def show_help(root):
 # Main function to create the GUI
 def main():
     # Declare global variables
-    global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, indexed_folder_label
+    global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
+        indexed_folder_label
 
     # Create GUI
     root = tk.Tk()
