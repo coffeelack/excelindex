@@ -40,35 +40,26 @@ def search_files(result_listbox):
         return
 
     result_listbox.delete(0, tk.END)
-    found = False
-    for item in os.listdir(indexed_folder):
-        item_path = os.path.join(indexed_folder, item)
-        if search_term in item.lower() and os.path.isfile(item_path) and item_path.endswith(('.xls', '.xlsx')):
-            result_listbox.insert(tk.END, f"File: {item} | Path: {item_path}")
-            found = True
 
-        if search_inside_files.get() == 1 and os.path.isfile(item_path) and item_path.endswith(('.xls', '.xlsx')):
-            try:
-                wb = load_workbook(item_path, read_only=True)
-                for sheet in wb:
-                    for row in sheet.iter_rows():
-                        for cell in row:
-                            if search_term in str(cell.value).lower():
-                                result_listbox.insert(tk.END, f"File: {item} | Path: {item_path}")
-                                found = True
-                                break
-            except Exception as e:
-                print(f"Error while processing {item}: {e}")
+    for root, dirs, files in os.walk(indexed_folder):
+        for item in files:
+            item_path = os.path.join(root, item)
 
-    if not found:
+            if os.path.isfile(item_path) and item_path.endswith(('.xls', '.xlsx')):
+                try:
+                    wb = load_workbook(item_path, read_only=True)
+                    for sheet in wb:
+                        for row in sheet.iter_rows():
+                            for cell in row:
+                                if search_term in str(cell.value).lower():
+                                    result_listbox.insert(tk.END, f"File: {item} | Path: {item_path}")
+                                    break
+                except Exception as e:
+                    print(f"Error while processing {item}: {e}")
+
+    if result_listbox.size() == 0:
         messagebox.showinfo("No Matches Found", "No files matching the search term were found.")
 
-    # Resize the result_listbox
-    num_results = result_listbox.size()
-    if num_results > 10:
-        result_listbox.configure(height=10)
-    else:
-        result_listbox.configure(height=num_results)
 
 
 def open_file(result_listbox=None):
