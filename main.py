@@ -4,6 +4,7 @@ import threading
 from tkinter import filedialog, messagebox, ttk
 from openpyxl import load_workbook
 import PyPDF2
+from docx2txt import process
 
 # Global variables
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
@@ -89,6 +90,8 @@ def search_files(result_listbox):
             search_excel_files(result_listbox, search_term, processed_items, number)
         case ".pdf":
             search_pdf_files(result_listbox, search_term, processed_items, number)
+        case ".docx":
+            search_docx_files(result_listbox, search_term, processed_items, number)
 
     if result_listbox.size() == 0:
         messagebox.showinfo("No Matches Found", "No files or directories matching the search term were found.")
@@ -173,6 +176,36 @@ def search_pdf_files(result_listbox, search_term, processed_items, number):
             # Include item in the search if both search_inside_files and search_inside_dirs are 0
             if not search_inside_files.get() and not search_inside_dirs.get() and search_term in item.lower():
                 if item.endswith('.pdf'):
+                    result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
+                    number += 1
+
+def search_docx_files(result_listbox, search_term, processed_items, number):
+    # Search for files and directories in the indexed folder
+    for root, dirs, files in os.walk(indexed_folder):
+        for item in (dirs + files):  # Include both directories and files
+            item_path = os.path.join(root, item)
+
+            # Check if search term should be searched in files
+            if search_inside_files.get() and os.path.isfile(item_path) and (item_path.endswith('.docx') or item_path.endswith('.doc')):
+                try:
+                    if item not in processed_items:
+                        text = process(item_path)
+                        if search_term.lower() in text.lower():
+                            result_listbox.insert(tk.END,
+                                                  f"{number} | File: {item}  |||  Path: {item_path}")
+                            number += 1
+                            processed_items.add(item)  # Add file to processed set
+                except Exception as e:
+                    print(f"Error while processing {item}: {e}")
+
+            # Check if search term should be searched in directories
+            if search_inside_dirs.get() and search_term in item.lower() and os.path.isdir(item_path):
+                result_listbox.insert(tk.END, f"{number} | Directory: {item}  |||  Path: {item_path}")
+                number += 1
+
+            # Include item in the search if both search_inside_files and search_inside_dirs are 0
+            if not search_inside_files.get() and not search_inside_dirs.get() and search_term in item.lower():
+                if item.endswith(('.docx', '.doc')):
                     result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
                     number += 1
 
@@ -310,7 +343,7 @@ def main():
 
     # Create widget for selecting the file extension
     file_extension_variable = tk.StringVar(root)
-    options = [".xlsx", ".pdf", ".docx", ".odt"]
+    options = [".xlsx", ".pdf", ".docx"]
     file_extension_box = ttk.Combobox(frame, textvariable=file_extension_variable, values=options)
     file_extension_box.set("Select a file extension")
     # Bind an event handler to the selection event
