@@ -3,6 +3,7 @@ import tkinter as tk
 import threading
 from tkinter import filedialog, messagebox, ttk
 from openpyxl import load_workbook
+import PyPDF2
 
 # Global variables
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
@@ -12,11 +13,11 @@ found_files = []
 
 # Function to recursively index files in a folder
 def index_files_in_folder(root, folder):
-    global indexed_files, indexed_dirs, index_thread, found_files
+    global indexed_files, indexed_dirs, index_thread, found_files, file_extension
     for item in os.listdir(folder):
         item_path = os.path.join(folder, item)
         # If the item is a file, check if it is an Excel file and increment the file count
-        if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
+        if os.path.isfile(item_path) and item_path.endswith(file_extension):
             indexed_files += 1
             try:
                 found_files = found_files + [item_path]
@@ -63,6 +64,7 @@ def index_folder(root):
 
 # Function to search for files containing a search term
 def search_files(result_listbox):
+    global file_extension
     # Ignore case when searching
     search_term = search_entry.get().lower()
     # If there is no search term, display an error message
@@ -81,13 +83,25 @@ def search_files(result_listbox):
     processed_items = set()
     number = 1
 
+    # Match Case the file extension
+    match file_extension:
+        case ".xlsx":
+            search_excel_files(result_listbox, search_term, processed_items, number)
+        case ".pdf":
+            search_pdf_files(result_listbox, search_term, processed_items, number)
+
+    if result_listbox.size() == 0:
+        messagebox.showinfo("No Matches Found", "No files or directories matching the search term were found.")
+    result_listbox.insert(tk.END, f"End of search results.")
+
+def search_excel_files(result_listbox, search_term, processed_items, number):
     # Search for files and directories in the indexed folder
     for root, dirs, files in os.walk(indexed_folder):
         for item in (dirs + files):  # Include both directories and files
             item_path = os.path.join(root, item)
 
             # Check if search term should be searched in files
-            if search_inside_files.get() and os.path.isfile(item_path) and item_path.endswith('.xlsx'):
+            if search_inside_files.get() and os.path.isfile(item_path) and item_path.endswith(file_extension):
                 try:
                     if item not in processed_items:
                         wb = load_workbook(item_path, read_only=True)
@@ -96,7 +110,8 @@ def search_files(result_listbox):
                             for row in sheet.iter_rows():
                                 for cell in row:
                                     if search_term in str(cell.value).lower():
-                                        result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
+                                        result_listbox.insert(tk.END,
+                                                              f"{number} | File: {item}  |||  Path: {item_path}")
                                         number += 1
                                         processed_items.add(item)  # Add file to processed set
                                         found = True
@@ -119,10 +134,47 @@ def search_files(result_listbox):
                     result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
                     number += 1
 
-    if result_listbox.size() == 0:
-        messagebox.showinfo("No Matches Found", "No files or directories matching the search term were found.")
+def search_pdf_files(result_listbox, search_term, processed_items, number):
+    # Search for files and directories in the indexed folder
+    for root, dirs, files in os.walk(indexed_folder):
+        for item in (dirs + files):  # Include both directories and files
+            item_path = os.path.join(root, item)
 
+            # Check if search term should be searched in files
+            if search_inside_files.get() and os.path.isfile(item_path) and item_path.endswith(file_extension):
+                try:
+                    if item not in processed_items:
+                        pdf_file = open(item_path, 'rb')
+                        pdf_reader = PyPDF2.PdfReader(pdf_file)
+                        found = False
 
+                        for page in pdf_reader.pages:
+                            page_text = page.extract_text()
+                            if page_text and search_term.lower() in page_text.lower():
+                                result_listbox.insert(tk.END,
+                                                      f"{number} | File: {item}  |||  Path: {item_path}")
+                                number += 1
+                                processed_items.add(item)  # Add file to processed set
+                                found = True
+                                break
+
+                        pdf_file.close()
+
+                        if found:
+                            break
+                except Exception as e:
+                    print(f"Error while processing {item}: {e}")
+
+            # Check if search term should be searched in directories
+            if search_inside_dirs.get() and search_term in item.lower() and os.path.isdir(item_path):
+                result_listbox.insert(tk.END, f"{number} | Directory: {item}  |||  Path: {item_path}")
+                number += 1
+
+            # Include item in the search if both search_inside_files and search_inside_dirs are 0
+            if not search_inside_files.get() and not search_inside_dirs.get() and search_term in item.lower():
+                if item.endswith('.pdf'):
+                    result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
+                    number += 1
 
 # Function to start the search thread
 def start_search_thread(result_listbox):
@@ -252,26 +304,9 @@ def main():
     indexed_folder_label = tk.Label(root, text="")
     indexed_folder_label.pack()
 
-    # Create widget for indexing and searching
-    thread_index_button = threading.Thread(target=lambda: index_folder(root))
-    index_button = tk.Button(root, text="Index Folder", command=thread_index_button.start)
-    index_button.pack()
-
-    # Create widget for displaying the result of the indexing
-    result_label = tk.Label(root, text="")
-    result_label.pack()
-
-    # Create widget for searching the indexed folder and files with a search term
-    search_label = tk.Label(root, text="Search:")
-    search_label.pack()
-
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
-    frame.pack(pady=10)
-
-    # Create widget for entering the search term
-    search_entry = tk.Entry(frame)
-    search_entry.pack(side=tk.LEFT, padx=(10, 0))
+    frame.pack()
 
     # Create widget for selecting the file extension
     file_extension_variable = tk.StringVar(root)
@@ -281,7 +316,28 @@ def main():
     # Bind an event handler to the selection event
     file_extension_box.bind("<<ComboboxSelected>>", lambda event: set_file_extension(file_extension_box))
     # Place the Combobox on the window
-    file_extension_box.pack(side=tk.RIGHT, padx=10)
+    file_extension_box.pack(side=tk.LEFT, padx=10)
+
+    # Create widget for indexing and searching
+    thread_index_button = threading.Thread(target=lambda: index_folder(root))
+    index_button = tk.Button(frame, text="Index Folder", command=thread_index_button.start)
+    index_button.pack(side=tk.LEFT, padx=10)
+
+    # Create widget for displaying the result of the indexing
+    result_label = tk.Label(root, text="")
+    result_label.pack()
+
+    # Create widget for searching the indexed folder and files with a search term
+    search_label = tk.Label(root, text="Search:")
+    search_label.pack(padx=10)
+
+    # Create widget frame for the following two widgets
+    frame = tk.Frame(root)
+    frame.pack(pady=10)
+
+    # Create widget for entering the search term
+    search_entry = tk.Entry(frame)
+    search_entry.pack(side=tk.LEFT, padx=(10, 0))
 
     # Create widget frame for the following two buttons
     checkbox_frame = tk.Frame(root)
@@ -291,7 +347,7 @@ def main():
     search_inside_files = tk.IntVar(value=1)
 
     # Create widget so that the user can choose whether to search inside the files or not
-    search_inside_files_checkbox = tk.Checkbutton(checkbox_frame, text="Search Inside Files",
+    search_inside_files_checkbox = tk.Checkbutton(checkbox_frame, text="File Content",
                                                   variable=search_inside_files)
     search_inside_files_checkbox.pack(side=tk.LEFT, padx=(10, 0))
 
@@ -299,9 +355,9 @@ def main():
     search_inside_dirs = tk.IntVar(value=0)
 
     # Create widget so that the user can choose whether to search inside directory names or not
-    search_inside_dirs_checkbox = tk.Checkbutton(checkbox_frame, text="Search Inside Directories",
+    search_inside_dirs_checkbox = tk.Checkbutton(checkbox_frame, text="Directory Names",
                                                  variable=search_inside_dirs)
-    search_inside_dirs_checkbox.pack(side=tk.RIGHT, padx=(10, 0))
+    search_inside_dirs_checkbox.pack(side=tk.RIGHT, padx=(10, 10))
 
     # Create widget frame for the following two buttons
     button_frame = tk.Frame(root)
@@ -321,15 +377,11 @@ def main():
 
     # Create widget for opening the selected file's path
     open_file_button = tk.Button(button_frame, text="Open File", command=lambda: open_file(result_listbox))
-    open_file_button.pack(side=tk.LEFT)
+    open_file_button.pack(side=tk.LEFT, padx=(10, 0))
 
     # Create widget for opening the selected file's path
     open_path_button = tk.Button(button_frame, text="Open Path", command=lambda: open_path(result_listbox))
     open_path_button.pack(side=tk.LEFT, padx=(10, 0))
-
-    # Create widget for quitting the program
-    quit_button = tk.Button(root, text="Quit", command=root.quit)
-    quit_button.pack(pady=(5, 0))
 
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
@@ -343,9 +395,13 @@ def main():
     help_button = tk.Button(frame, text="Help", command=lambda: show_help(root))
     help_button.pack(side=tk.LEFT, padx=(10, 10))
 
+    # Create widget for quitting the program
+    quit_button = tk.Button(frame, text="Quit", command=root.quit)
+    quit_button.pack(side=tk.LEFT, pady=(10, 10))
+
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
-    frame.pack(pady=10)
+    frame.pack(pady=5)
 
     # Create widget for displaying the version number
     version_label = tk.Label(frame, text="File Indexer V1.2")
