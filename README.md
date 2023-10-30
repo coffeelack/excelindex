@@ -2,20 +2,22 @@
 
 # File Indexer - Help
 
-Welcome to the File Indexer application! This tool allows you to index a folder, search for files, and perform various operations on them.
+Welcome to the File Indexer application! This tool allows you to index a folder, search for different files, and their content.
 
 ## Indexing a Folder:
 
-1. Click the "Index Folder" button.
-2. Select the folder you want to index.
-3. The application will recursively count the number of files and directories inside the selected folder.
+1. Select a file extension you want to index.
+2. Click the "Index Folder" button.
+3. Select the folder you want to index.
+4. The application will recursively count the number of files and directories inside the selected folder.
 
 ## Searching for Files:
 
 1. Enter a search term in the "Search" field.
-2. Optionally, check the "Search Inside Files" box to search within the content of Excel files.
-3. Click the "Search" button.
-4. The application will display a list of files that match the search criteria.
+2. Optionally, check the "File content" box to search within the content of Excel files
+   and/or check the "Directory names" box to search within subdirectory names. 
+4. Click the "Search" button.
+5. The application will display a list of files that match the search criteria.
 
 ## Opening Files or Paths:
 
