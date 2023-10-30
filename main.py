@@ -8,17 +8,24 @@ from openpyxl import load_workbook
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
     indexed_folder_label, index_thread
 
+
 # Function to recursively index files in a folder
 def index_files_in_folder(root, folder):
-    global indexed_files, indexed_dirs, index_thread
+    global indexed_files, indexed_dirs, index_thread, found_files
     for item in os.listdir(folder):
         item_path = os.path.join(folder, item)
+        # If the item is a file, check if it is an Excel file and increment the file count
         if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
             indexed_files += 1
+            found_files = found_files + [item_path]
+            root.update_idletasks()  # Update the GUI
+        # If the item is a folder, recursively index files in the folder
         elif os.path.isdir(item_path):
             indexed_dirs += 1
-            index_thread = threading.Thread(target=index_files_in_folder, args=(root, item_path))
+            root.update_idletasks()  # Update the GUI
+            index_thread = threading.Thread(target=lambda: index_files_in_folder(root, item_path))
             index_thread.start()
+            root.update_idletasks()  # Update the GUI
 
         # Update progress message
         progress_message = f"Indexing: {indexed_files} files and {indexed_dirs} directories"
@@ -36,13 +43,14 @@ def index_files_in_folder(root, folder):
 
 # Function to index a folder
 def index_folder(root):
-    global indexed_folder, indexed_files, indexed_dirs, index_thread
+    global indexed_folder, indexed_files, indexed_dirs, index_thread, found_files
+    found_files = []
     folder_path = filedialog.askdirectory(title="Select Folder to Index")  # Prompt user to select a folder
     if folder_path:
         indexed_folder = folder_path
         indexed_files = 0
         indexed_dirs = 0
-        index_files_in_folder(root, folder_path)  # Call function to index files
+        found_files = index_files_in_folder(root, folder_path)  # Call function to index files
         progress_message = f"Indexed {indexed_files} files in {indexed_dirs} directories."
         result_label.config(text=progress_message)  # Update progress message
         indexed_folder_label.config(text=f"Indexed Folder: {indexed_folder}")  # Display indexed folder path
@@ -51,7 +59,7 @@ def index_folder(root):
         except:
             pass
         result_label.config(text=f"Indexing complete (Files: {indexed_files} | Directorys: {indexed_dirs})")
-
+        root.update_idletasks()  # Update the GUI
 
 # Function to search for files containing a search term
 def search_files(result_listbox):
@@ -69,6 +77,9 @@ def search_files(result_listbox):
     # Clear the listbox
     result_listbox.delete(0, tk.END)
 
+    # Keep track of processed files
+    processed_files = set()
+
     # Search for files in the indexed folder
     for root, dirs, files in os.walk(indexed_folder):
         for item in files:
@@ -77,13 +88,21 @@ def search_files(result_listbox):
             # Only search for Excel files with the specified extension
             if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
                 try:
-                    wb = load_workbook(item_path, read_only=True)
-                    for sheet in wb:
-                        for row in sheet.iter_rows():
-                            for cell in row:
-                                if search_term in str(cell.value).lower():
-                                    result_listbox.insert(tk.END, f"File: {item} | Path: {item_path}")
+                    if item not in processed_files:
+                        wb = load_workbook(item_path, read_only=True)
+                        found = False
+                        for sheet in wb:
+                            for row in sheet.iter_rows():
+                                for cell in row:
+                                    if search_term in str(cell.value).lower():
+                                        result_listbox.insert(tk.END, f"File: {item} | Path: {item_path}")
+                                        processed_files.add(item)  # Add file to processed set
+                                        found = True
+                                        break
+                                if found:
                                     break
+                            if found:
+                                break
                 except Exception as e:
                     print(f"Error while processing {item}: {e}")
 
@@ -95,6 +114,7 @@ def start_search_thread(result_listbox):
     thread = threading.Thread(target=lambda: search_files(result_listbox))
     thread.start()
 
+
 # Function to open selected file
 def open_file(result_listbox=None):
     selected_item = result_listbox.get(tk.ACTIVE)
@@ -104,6 +124,7 @@ def open_file(result_listbox=None):
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open.")
 
+
 # Function to open containing folder of selected file
 def open_path(result_listbox=None):
     selected_item = result_listbox.get(tk.ACTIVE)
@@ -112,6 +133,7 @@ def open_path(result_listbox=None):
         os.startfile(os.path.dirname(file_path))
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open the path.")
+
 
 # Function to display license information
 def show_license(root):
@@ -147,6 +169,7 @@ def show_license(root):
     license_label = tk.Label(license_window, text=license_text, justify=tk.LEFT)
     license_label.pack(padx=10, pady=10)
     license_window.iconbitmap('Shell-Icon.ico')
+
 
 # Function to display help information
 def show_help(root):
@@ -191,7 +214,6 @@ def show_help(root):
     help_label = tk.Label(help_window, text=help_text, justify=tk.LEFT)
     help_label.pack(padx=10, pady=10)
     help_window.iconbitmap('Shell-Icon.ico')
-
 
 
 # Main function to create the GUI
@@ -260,7 +282,6 @@ def main():
     quit_button = tk.Button(root, text="Quit", command=root.quit)
     quit_button.pack()
 
-
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
     frame.pack(pady=10)
@@ -293,8 +314,8 @@ def main():
     # Start GUI
     root.mainloop()
 
+
 # Entry point of the program
 if __name__ == "__main__":
     thread_main = threading.Thread(target=main)
     thread_main.start()
-
