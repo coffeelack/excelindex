@@ -112,6 +112,7 @@ def show_license(root):
     license_window.iconbitmap('Shell-Icon.ico')
 
 def main():
+    # Declare global variables
     global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, indexed_folder_label
 
     # Create GUI
@@ -119,58 +120,76 @@ def main():
     root.minsize(240, 300)
     root.title("File Indexer")
 
+    # Set icon
     root.iconbitmap('Shell-Icon.ico')
 
+    # Create widget for path of indexed folder
     indexed_folder_label = tk.Label(root, text="")
     indexed_folder_label.pack()
 
+    # Create widget for indexing and searching
     index_button = tk.Button(root, text="Index Folder", command=index_folder)
     index_button.pack()
 
-    search_label = tk.Label(root, text="Search:")
-    search_label.pack()
-
-    search_entry = tk.Entry(root)
-    search_entry.pack()
-
-    search_inside_files = tk.IntVar()  # Variable to hold checkbox state
-    search_inside_checkbox = tk.Checkbutton(root, text="Search Inside Files", variable=search_inside_files)
-    search_inside_checkbox.pack()
-
-    search_button = tk.Button(root, text="Search", command=lambda: search_files(result_listbox))
-    search_button.pack()
-
-    result_listbox = tk.Listbox(root)
-    result_listbox.pack(expand=True, fill=tk.BOTH)
-
-    button_frame = tk.Frame(root)
-    button_frame.pack()
-
-    open_file_button = tk.Button(button_frame, text="Open File", command=lambda: open_file(result_listbox))
-    open_file_button.pack(side=tk.LEFT)
-
-    open_path_button = tk.Button(button_frame, text="Open Path", command=lambda: open_path(result_listbox))
-    open_path_button.pack(side=tk.LEFT, padx=(5, 0))
-
-    quit_button = tk.Button(root, text="Quit", command=root.quit)
-    quit_button.pack()
-
+    # Create widget for displaying the result of the indexing
     result_label = tk.Label(root, text="")
     result_label.pack()
 
+    # Create widget for searching the indexed folder and files with a search term
+    search_label = tk.Label(root, text="Search:")
+    search_label.pack()
+
+    # Create widget for entering the search term
+    search_entry = tk.Entry(root)
+    search_entry.pack()
+
+    # Create widget so that the user can choose whether to search inside the files or not
+    search_inside_files = tk.IntVar()
+    search_inside_checkbox = tk.Checkbutton(root, text="Search Inside Files", variable=search_inside_files)
+    search_inside_checkbox.pack()
+
+    # Create widget for triggering the search
+    search_button = tk.Button(root, text="Search", command=lambda: search_files(result_listbox))
+    search_button.pack()
+
+    # Create widget for displaying the search results
+    result_listbox = tk.Listbox(root)
+    result_listbox.pack(expand=True, fill=tk.BOTH)
+
+    # Create widget frame for the following two buttons
+    button_frame = tk.Frame(root)
+    button_frame.pack()
+
+    # Create widget for opening the selected file's path
+    open_file_button = tk.Button(button_frame, text="Open File", command=lambda: open_file(result_listbox))
+    open_file_button.pack(side=tk.LEFT)
+
+    # Create widget for opening the selected file's path
+    open_path_button = tk.Button(button_frame, text="Open Path", command=lambda: open_path(result_listbox))
+    open_path_button.pack(side=tk.LEFT, padx=(5, 0))
+
+    # Create widget for quitting the program
+    quit_button = tk.Button(root, text="Quit", command=root.quit)
+    quit_button.pack()
+
+    # Create widget frame for the following two widgets
     frame = tk.Frame(root)
     frame.pack(pady=10)
 
+    # Create widget for displaying the name of the author
     name_label = tk.Label(frame, text="© 2023 Gabriel Unsinn")
     name_label.pack(side=tk.LEFT)
 
+    # Create widget for displaying the license
     license_button = tk.Button(frame, text="View License", command=lambda: show_license(root))
     license_button.pack(side=tk.LEFT, padx=(10, 0))
 
+    # Initialize variables
     indexed_folder = ""
     indexed_files = 0
     indexed_dirs = 0
 
+    # Start GUI
     root.mainloop()
 
 
