@@ -10,6 +10,7 @@ from docx2txt import process
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
     search_inside_dirs, indexed_folder_label, index_thread, file_extension
 
+# Initialize variables
 found_files = []
 file_extension = ""
 
@@ -229,7 +230,6 @@ def open_file(result_listbox=None):
     selected_item = result_listbox.get(tk.ACTIVE)
     if selected_item:
         file_path = selected_item.split("|||  Path: ")[-1].strip()
-        print(file_path)
         os.startfile(file_path)
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open.")
@@ -239,7 +239,6 @@ def open_path(result_listbox):
     selected_item = result_listbox.get(tk.ACTIVE)
     if selected_item:
         file_path = selected_item.split("|||  Path: ")[-1].strip()
-        print(file_path)
         os.startfile(os.path.dirname(file_path))
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open the path.")
@@ -327,7 +326,6 @@ def show_help(root):
 def set_file_extension(file_extension_box):
     global file_extension
     file_extension = file_extension_box.get()
-    print(file_extension)
 
 # Main function to create the GUI
 def main():
@@ -389,7 +387,7 @@ def main():
     search_inside_files = tk.IntVar(value=1)
 
     # Create widget so that the user can choose whether to search inside the files or not
-    search_inside_files_checkbox = tk.Checkbutton(checkbox_frame, text="File Content",
+    search_inside_files_checkbox = tk.Checkbutton(checkbox_frame, text="File content",
                                                   variable=search_inside_files)
     search_inside_files_checkbox.pack(side=tk.LEFT, padx=(10, 0))
 
@@ -397,7 +395,7 @@ def main():
     search_inside_dirs = tk.IntVar(value=0)
 
     # Create widget so that the user can choose whether to search inside directory names or not
-    search_inside_dirs_checkbox = tk.Checkbutton(checkbox_frame, text="Directory Names",
+    search_inside_dirs_checkbox = tk.Checkbutton(checkbox_frame, text="Directory names",
                                                  variable=search_inside_dirs)
     search_inside_dirs_checkbox.pack(side=tk.RIGHT, padx=(10, 10))
 
