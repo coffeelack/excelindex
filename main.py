@@ -81,29 +81,28 @@ def open_path(result_listbox=None):
 
 def show_license(root):
     license_text = """
-    Lizenztext - CC-BY-NC-SA 4.0
+    License - CC-BY-NC-SA 4.0
 
-    Diese Software ist lizenziert unter der Creative Commons Namensnennung - Nicht-kommerziell - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz.
+    This software is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
     
-    Sie haben folgende Freiheiten:
+    You have the following freedoms:
     
-    Die Software für jeden legalen Zweck nutzen, auch kommerziell.
-    Die Software verändern und anpassen.
-    Die Software weitergeben.
+    Use the software for any lawful purpose, including commercial.
+    Change and adapt the software.
+    Pass on the software.
     
-    Dieser Lizenz müssen Sie folgende Bedingungen entnehmen:
+    This license requires you to read the following terms and conditions:
     
-    Namensnennung: Sie müssen den Namen des Autors/der Autorin in der von ihm/ihr festgelegten Weise nennen.
-    Nicht-kommerziell: Sie dürfen diese Software nicht für kommerzielle Zwecke nutzen.
-    Weitergabe unter gleichen Bedingungen: Wenn Sie die Software verändern, abwandeln oder als Grundlage für eine neue Software verwenden, müssen Sie Ihre Beiträge unter derselben Lizenz wie das Original verbreiten.
-    Haftungsausschluss:
-    Die Software wird "wie sie ist" bereitgestellt, ohne jegliche Gewährleistung. Der Autor/die Autorin haftet nicht für eventuelle Schäden, die aus der Nutzung dieser Software entstehen.
+    Attribution: You must credit the author's name in the manner specified by him/her.
+    Non-Commercial: You may not use this software for commercial purposes.
+    Share Alike: If you modify, modify, or use the Software as the basis for new software, you must distribute your contributions under the same license as the original.
+    Disclaimer:
+    The Software is provided “as is” without warranty of any kind. The author is not liable for any damage resulting from the use of this software.
     
-    Hinweis:
-    Diese Lizenz gilt ausschließlich für die Software und hat keine Auswirkungen auf andere Teile Ihres Projekts, die nicht unter dieser Lizenz stehen.
+    A notice:
+    This License applies solely to the Software and does not affect any other portion of your project not covered by this License.
     
-    Für eine detaillierte Version der Lizenzbedingungen besuchen Sie bitte die offizielle Seite der Creative Commons-Lizenz CC-BY-NC-SA 4.0.
-    
+    For a detailed version of the license terms, please visit the official page of the Creative Commons license CC-BY-NC-SA 4.0.
     © 2023 Gabriel Unsinn
     """
     license_window = tk.Toplevel(root)
@@ -151,7 +150,7 @@ def main():
     open_file_button.pack(side=tk.LEFT)
 
     open_path_button = tk.Button(button_frame, text="Open Path", command=lambda: open_path(result_listbox))
-    open_path_button.pack(side=tk.LEFT)
+    open_path_button.pack(side=tk.LEFT, padx=(5, 0))
 
     quit_button = tk.Button(root, text="Quit", command=root.quit)
     quit_button.pack()
