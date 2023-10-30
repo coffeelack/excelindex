@@ -79,6 +79,38 @@ def open_path(result_listbox=None):
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open the path.")
 
+def show_license(root):
+    license_text = """
+    Lizenztext - CC-BY-NC-SA 4.0
+
+    Diese Software ist lizenziert unter der Creative Commons Namensnennung - Nicht-kommerziell - Weitergabe unter gleichen Bedingungen 4.0 International Lizenz.
+    
+    Sie dürfen:
+    
+    Die Software für jeden legalen Zweck nutzen, auch kommerziell.
+    Die Software verändern und anpassen.
+    Die Software weitergeben.
+    
+    Unter folgenden Bedingungen:
+    
+    Namensnennung: Sie müssen den Namen des Autors/der Autorin in der von ihm/ihr festgelegten Weise nennen.
+    Nicht-kommerziell: Sie dürfen diese Software nicht für kommerzielle Zwecke nutzen.
+    Weitergabe unter gleichen Bedingungen: Wenn Sie die Software verändern, abwandeln oder als Grundlage für eine neue Software verwenden, müssen Sie Ihre Beiträge unter derselben Lizenz wie das Original verbreiten.
+    Haftungsausschluss:
+    Die Software wird "wie sie ist" bereitgestellt, ohne jegliche Gewährleistung. Der Autor/die Autorin haftet nicht für eventuelle Schäden, die aus der Nutzung dieser Software entstehen.
+    
+    Hinweis:
+    Diese Lizenz gilt ausschließlich für die Software und hat keine Auswirkungen auf andere Teile Ihres Projekts, die nicht unter dieser Lizenz stehen.
+    
+    Für eine detaillierte Version der Lizenzbedingungen besuchen Sie bitte die offizielle Seite der Creative Commons-Lizenz CC-BY-NC-SA 4.0.
+    
+    © 2023 Gabriel Unsinn
+    """
+    license_window = tk.Toplevel(root)
+    license_window.title("License")
+    license_label = tk.Label(license_window, text=license_text, justify=tk.LEFT)
+    license_label.pack(padx=10, pady=10)
+    license_window.iconbitmap('AMETRAS-dms-Icon.ico')
 
 def main():
     global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, indexed_folder_label
@@ -90,11 +122,11 @@ def main():
 
     root.iconbitmap('AMETRAS-dms-Icon.ico')
 
-    index_button = tk.Button(root, text="Index Folder", command=index_folder)
-    index_button.pack()
-
     indexed_folder_label = tk.Label(root, text="")
     indexed_folder_label.pack()
+
+    index_button = tk.Button(root, text="Index Folder", command=index_folder)
+    index_button.pack()
 
     search_label = tk.Label(root, text="Search:")
     search_label.pack()
@@ -126,6 +158,15 @@ def main():
 
     result_label = tk.Label(root, text="")
     result_label.pack()
+
+    frame = tk.Frame(root)
+    frame.pack(pady=10)
+
+    name_label = tk.Label(frame, text="(c) 2023 Gabriel Unsinn")
+    name_label.pack(side=tk.LEFT)
+
+    license_button = tk.Button(frame, text="View License", command=lambda: show_license(root))
+    license_button.pack(side=tk.LEFT, padx=(10, 0))
 
     indexed_folder = ""
     indexed_files = 0
