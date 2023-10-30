@@ -14,8 +14,9 @@ Welcome to the File Indexer application! This tool allows you to index a folder,
 ## Searching for Files:
 
 1. Enter a search term in the "Search" field.
-2. Optionally, check the "File content" box to search within the content of Excel files
-   and/or check the "Directory names" box to search within subdirectory names. 
+2. By default only file names are being searched.
+   Optionally, check the "File content" box to search within the content of Excel files
+   and/or check the "Directory names" box to search within subdirectory names.
 4. Click the "Search" button.
 5. The application will display a list of files that match the search criteria.
 
