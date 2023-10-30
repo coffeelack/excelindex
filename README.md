@@ -1,4 +1,4 @@
-© 2023 Gabriel Unsinn / Github: [https://github.com/coffeelack](https://github.com/coffeelack)
+© 2023 Gabriel Unsinn / Github: [https://github.com/coffeelack](https://github.com/coffeelack/excelindex)
 
 # File Indexer - Help
 
