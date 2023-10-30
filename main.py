@@ -8,6 +8,7 @@ from openpyxl import load_workbook
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
     indexed_folder_label, index_thread
 
+found_files = []
 
 # Function to recursively index files in a folder
 def index_files_in_folder(root, folder):
@@ -17,7 +18,10 @@ def index_files_in_folder(root, folder):
         # If the item is a file, check if it is an Excel file and increment the file count
         if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
             indexed_files += 1
-            found_files = found_files + [item_path]
+            try:
+                found_files = found_files + [item_path]
+            except:
+                pass
             root.update_idletasks()  # Update the GUI
         # If the item is a folder, recursively index files in the folder
         elif os.path.isdir(item_path):
@@ -32,9 +36,6 @@ def index_files_in_folder(root, folder):
         result_label.config(text=progress_message)
         root.update_idletasks()  # Update the GUI
 
-        # Add a short delay (optional)
-        root.after(10)  # Add a small delay to control the speed of indexing
-
     # Join the thread to wait for it to finish
     try:
         index_thread.join()
@@ -44,7 +45,6 @@ def index_files_in_folder(root, folder):
 # Function to index a folder
 def index_folder(root):
     global indexed_folder, indexed_files, indexed_dirs, index_thread, found_files
-    found_files = []
     folder_path = filedialog.askdirectory(title="Select Folder to Index")  # Prompt user to select a folder
     if folder_path:
         indexed_folder = folder_path
@@ -79,7 +79,7 @@ def search_files(result_listbox):
 
     # Keep track of processed files
     processed_files = set()
-
+    number = 1
     # Search for files in the indexed folder
     for root, dirs, files in os.walk(indexed_folder):
         for item in files:
@@ -95,7 +95,8 @@ def search_files(result_listbox):
                             for row in sheet.iter_rows():
                                 for cell in row:
                                     if search_term in str(cell.value).lower():
-                                        result_listbox.insert(tk.END, f"File: {item} | Path: {item_path}")
+                                        result_listbox.insert(tk.END, f"{number} | File: {item}  |||  Path: {item_path}")
+                                        number += 1
                                         processed_files.add(item)  # Add file to processed set
                                         found = True
                                         break
@@ -111,9 +112,8 @@ def search_files(result_listbox):
 
 # Function to start the search thread
 def start_search_thread(result_listbox):
-    thread = threading.Thread(target=lambda: search_files(result_listbox))
-    thread.start()
-
+    search_thread = threading.Thread(target=lambda: search_files(result_listbox))
+    search_thread.start()
 
 # Function to open selected file
 def open_file(result_listbox=None):
@@ -168,7 +168,7 @@ def show_license(root):
     license_window.title("License")
     license_label = tk.Label(license_window, text=license_text, justify=tk.LEFT)
     license_label.pack(padx=10, pady=10)
-    license_window.iconbitmap('Shell-Icon.ico')
+    license_window.iconbitmap('shell-icon.ico')
 
 
 # Function to display help information
@@ -213,8 +213,7 @@ def show_help(root):
     help_window.title("Help")
     help_label = tk.Label(help_window, text=help_text, justify=tk.LEFT)
     help_label.pack(padx=10, pady=10)
-    help_window.iconbitmap('Shell-Icon.ico')
-
+    help_window.iconbitmap('shell-icon.ico')
 
 # Main function to create the GUI
 def main():
@@ -228,7 +227,7 @@ def main():
     root.title("File Indexer")
 
     # Set icon
-    root.iconbitmap('Shell-Icon.ico')
+    root.iconbitmap('shell-icon.ico')
 
     # Create widget for path of indexed folder
     indexed_folder_label = tk.Label(root, text="")
@@ -258,9 +257,13 @@ def main():
     search_inside_files_checkbox = tk.Checkbutton(root, text="Search Inside Files", variable=search_inside_files)
     search_inside_files_checkbox.pack()
 
+    # Create widget frame for the following two buttons
+    button_frame = tk.Frame(root)
+    button_frame.pack()
+
     # Create widget for triggering the search
-    search_button = tk.Button(root, text="Search", command=lambda: start_search_thread(result_listbox))
-    search_button.pack()
+    search_button = tk.Button(button_frame, text="Search", command=lambda: start_search_thread(result_listbox))
+    search_button.pack(side=tk.RIGHT, padx=(10, 0))
 
     # Create widget for displaying the search results
     result_listbox = tk.Listbox(root)
