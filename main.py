@@ -11,6 +11,35 @@ global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, 
     search_inside_dirs, indexed_folder_label, index_thread, file_extension
 
 found_files = []
+file_extension = ""
+
+
+# Function to index a folder
+def index_folder(root):
+    global file_extension
+    if file_extension == "":
+        messagebox.showinfo("File Extension Missing", "Please select a file extension.")
+        return
+    index_threading = threading.Thread(target=lambda: start_index_thread(root))
+    index_threading.start()
+
+def start_index_thread(root):
+    global indexed_folder, indexed_files, indexed_dirs, index_thread, found_files, file_extension
+    folder_path = filedialog.askdirectory(title="Select Folder to Index")  # Prompt user to select a folder
+    if folder_path:
+        indexed_folder = folder_path
+        indexed_files = 0
+        indexed_dirs = 0
+        found_files = index_files_in_folder(root, folder_path)  # Call function to index files
+        progress_message = f"Indexed {indexed_files} files in {indexed_dirs} directories."
+        result_label.config(text=progress_message)  # Update progress message
+        indexed_folder_label.config(text=f"Indexed Folder: {indexed_folder}")  # Display indexed folder path
+        try:
+            index_thread.join()
+        except:
+            pass
+        result_label.config(text=f"Indexing complete (Files: {indexed_files} | Directorys: {indexed_dirs})")
+        root.update_idletasks()  # Update the GUI
 
 # Function to recursively index files in a folder
 def index_files_in_folder(root, folder):
@@ -43,25 +72,6 @@ def index_files_in_folder(root, folder):
         index_thread.join()
     except:
         pass
-
-# Function to index a folder
-def index_folder(root):
-    global indexed_folder, indexed_files, indexed_dirs, index_thread, found_files
-    folder_path = filedialog.askdirectory(title="Select Folder to Index")  # Prompt user to select a folder
-    if folder_path:
-        indexed_folder = folder_path
-        indexed_files = 0
-        indexed_dirs = 0
-        found_files = index_files_in_folder(root, folder_path)  # Call function to index files
-        progress_message = f"Indexed {indexed_files} files in {indexed_dirs} directories."
-        result_label.config(text=progress_message)  # Update progress message
-        indexed_folder_label.config(text=f"Indexed Folder: {indexed_folder}")  # Display indexed folder path
-        try:
-            index_thread.join()
-        except:
-            pass
-        result_label.config(text=f"Indexing complete (Files: {indexed_files} | Directorys: {indexed_dirs})")
-        root.update_idletasks()  # Update the GUI
 
 # Function to search for files containing a search term
 def search_files(result_listbox):
@@ -352,8 +362,7 @@ def main():
     file_extension_box.pack(side=tk.LEFT, padx=10)
 
     # Create widget for indexing and searching
-    thread_index_button = threading.Thread(target=lambda: index_folder(root))
-    index_button = tk.Button(frame, text="Index Folder", command=thread_index_button.start)
+    index_button = tk.Button(frame, text="Index Folder", command=lambda: index_folder(root))
     index_button.pack(side=tk.LEFT, padx=10)
 
     # Create widget for displaying the result of the indexing
