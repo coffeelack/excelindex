@@ -1,35 +1,24 @@
 import os
 import tkinter as tk
+import threading
 from tkinter import filedialog, messagebox
 from openpyxl import load_workbook
 
 # Global variables
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
-    indexed_folder_label
-
-# Function to index a folder
-def index_folder(root):
-    global indexed_folder, indexed_files, indexed_dirs
-    folder_path = filedialog.askdirectory(title="Select Folder to Index")  # Prompt user to select a folder
-    if folder_path:
-        indexed_folder = folder_path
-        indexed_files = 0
-        indexed_dirs = 0
-        index_files_in_folder(root, folder_path)  # Call function to index files
-        progress_message = f"Indexed {indexed_files} files and {indexed_dirs} directories."
-        result_label.config(text=progress_message)  # Update progress message
-        indexed_folder_label.config(text=f"Indexed Folder: {indexed_folder}")  # Display indexed folder path
+    indexed_folder_label, index_thread
 
 # Function to recursively index files in a folder
 def index_files_in_folder(root, folder):
-    global indexed_files, indexed_dirs
+    global indexed_files, indexed_dirs, index_thread
     for item in os.listdir(folder):
         item_path = os.path.join(folder, item)
-        if os.path.isfile(item_path) and item_path.endswith(('.xls', '.xlsx')):
+        if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
             indexed_files += 1
         elif os.path.isdir(item_path):
             indexed_dirs += 1
-            index_files_in_folder(root, item_path)  # Recursively index files in subdirectories
+            index_thread = threading.Thread(target=index_files_in_folder, args=(root, item_path))
+            index_thread.start()
 
         # Update progress message
         progress_message = f"Indexing: {indexed_files} files and {indexed_dirs} directories"
@@ -39,8 +28,30 @@ def index_files_in_folder(root, folder):
         # Add a short delay (optional)
         root.after(10)  # Add a small delay to control the speed of indexing
 
-    # Finished indexing, clear the progress message
-    result_label.config(text="")
+    # Join the thread to wait for it to finish
+    try:
+        index_thread.join()
+    except:
+        pass
+
+# Function to index a folder
+def index_folder(root):
+    global indexed_folder, indexed_files, indexed_dirs, index_thread
+    folder_path = filedialog.askdirectory(title="Select Folder to Index")  # Prompt user to select a folder
+    if folder_path:
+        indexed_folder = folder_path
+        indexed_files = 0
+        indexed_dirs = 0
+        index_files_in_folder(root, folder_path)  # Call function to index files
+        progress_message = f"Indexed {indexed_files} files in {indexed_dirs} directories."
+        result_label.config(text=progress_message)  # Update progress message
+        indexed_folder_label.config(text=f"Indexed Folder: {indexed_folder}")  # Display indexed folder path
+        try:
+            index_thread.join()
+        except:
+            pass
+        result_label.config(text=f"Indexing complete (Files: {indexed_files} | Directorys: {indexed_dirs})")
+
 
 # Function to search for files containing a search term
 def search_files(result_listbox):
@@ -64,7 +75,7 @@ def search_files(result_listbox):
             item_path = os.path.join(root, item)
 
             # Only search for Excel files with the specified extension
-            if os.path.isfile(item_path) and item_path.endswith(('.xls', '.xlsx')):
+            if os.path.isfile(item_path) and item_path.endswith('.xlsx'):
                 try:
                     wb = load_workbook(item_path, read_only=True)
                     for sheet in wb:
@@ -78,6 +89,11 @@ def search_files(result_listbox):
 
     if result_listbox.size() == 0:
         messagebox.showinfo("No Matches Found", "No files matching the search term were found.")
+
+# Function to start the search thread
+def start_search_thread(result_listbox):
+    thread = threading.Thread(target=lambda: search_files(result_listbox))
+    thread.start()
 
 # Function to open selected file
 def open_file(result_listbox=None):
@@ -176,6 +192,8 @@ def show_help(root):
     help_label.pack(padx=10, pady=10)
     help_window.iconbitmap('Shell-Icon.ico')
 
+
+
 # Main function to create the GUI
 def main():
     # Declare global variables
@@ -184,7 +202,7 @@ def main():
 
     # Create GUI
     root = tk.Tk()
-    root.minsize(240, 300)
+    root.minsize(265, 300)
     root.title("File Indexer")
 
     # Set icon
@@ -195,7 +213,8 @@ def main():
     indexed_folder_label.pack()
 
     # Create widget for indexing and searching
-    index_button = tk.Button(root, text="Index Folder", command=lambda: index_folder(root))
+    thread_index_button = threading.Thread(target=lambda: index_folder(root))
+    index_button = tk.Button(root, text="Index Folder", command=thread_index_button.start)
     index_button.pack()
 
     # Create widget for displaying the result of the indexing
@@ -214,11 +233,11 @@ def main():
     search_inside_files = tk.IntVar(value=1)
 
     # Create widget so that the user can choose whether to search inside the files or not
-    search_inside_checkbox = tk.Checkbutton(root, text="Search Inside Files", variable=search_inside_files)
-    search_inside_checkbox.pack()
+    search_inside_files_checkbox = tk.Checkbutton(root, text="Search Inside Files", variable=search_inside_files)
+    search_inside_files_checkbox.pack()
 
     # Create widget for triggering the search
-    search_button = tk.Button(root, text="Search", command=lambda: search_files(result_listbox))
+    search_button = tk.Button(root, text="Search", command=lambda: start_search_thread(result_listbox))
     search_button.pack()
 
     # Create widget for displaying the search results
@@ -241,13 +260,10 @@ def main():
     quit_button = tk.Button(root, text="Quit", command=root.quit)
     quit_button.pack()
 
+
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
     frame.pack(pady=10)
-
-    # Create widget for displaying the name of the author
-    name_label = tk.Label(frame, text="© 2023 Gabriel Unsinn")
-    name_label.pack(side=tk.LEFT)
 
     # Create widget for displaying the license
     license_button = tk.Button(frame, text="View License", command=lambda: show_license(root))
@@ -256,6 +272,18 @@ def main():
     # Create widget for displaying the help
     help_button = tk.Button(frame, text="Help", command=lambda: show_help(root))
     help_button.pack(side=tk.LEFT, padx=(5, 10))
+
+    # Create widget frame for the following two widgets
+    frame = tk.Frame(root)
+    frame.pack(pady=10)
+
+    # Create widget for displaying the version number
+    version_label = tk.Label(frame, text="File Indexer V1.1")
+    version_label.pack(side=tk.LEFT, pady=(1, 1))
+
+    # Create widget for displaying the name of the author
+    name_label = tk.Label(frame, text="© 2023 Gabriel Unsinn")
+    name_label.pack(side=tk.LEFT)
 
     # Initialize variables
     indexed_folder = ""
@@ -267,4 +295,6 @@ def main():
 
 # Entry point of the program
 if __name__ == "__main__":
-    main()
+    thread_main = threading.Thread(target=main)
+    thread_main.start()
+
