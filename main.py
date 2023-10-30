@@ -329,7 +329,7 @@ def main():
     frame.pack(pady=10)
 
     # Create widget for displaying the version number
-    version_label = tk.Label(frame, text="File Indexer V1.1")
+    version_label = tk.Label(frame, text="File Indexer V1.2")
     version_label.pack(side=tk.LEFT, pady=(1, 1))
 
     # Create widget for displaying the name of the author
