@@ -1,12 +1,12 @@
 import os
 import tkinter as tk
 import threading
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 from openpyxl import load_workbook
 
 # Global variables
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
-    search_inside_dirs, indexed_folder_label, index_thread
+    search_inside_dirs, indexed_folder_label, index_thread, file_extension
 
 found_files = []
 
@@ -229,6 +229,11 @@ def show_help(root):
     help_label.pack(padx=10, pady=10)
     help_window.iconbitmap('shell-icon.ico')
 
+def set_file_extension(file_extension_box):
+    global file_extension
+    file_extension = file_extension_box.get()
+    print(file_extension)
+
 # Main function to create the GUI
 def main():
     # Declare global variables
@@ -260,9 +265,23 @@ def main():
     search_label = tk.Label(root, text="Search:")
     search_label.pack()
 
+    # Create widget frame for the following two widgets
+    frame = tk.Frame(root)
+    frame.pack(pady=10)
+
     # Create widget for entering the search term
-    search_entry = tk.Entry(root)
-    search_entry.pack()
+    search_entry = tk.Entry(frame)
+    search_entry.pack(side=tk.LEFT, padx=(10, 0))
+
+    # Create widget for selecting the file extension
+    file_extension_variable = tk.StringVar(root)
+    options = [".xlsx", ".pdf", ".docx", ".odt"]
+    file_extension_box = ttk.Combobox(frame, textvariable=file_extension_variable, values=options)
+    file_extension_box.set("Select a file extension")
+    # Bind an event handler to the selection event
+    file_extension_box.bind("<<ComboboxSelected>>", lambda event: set_file_extension(file_extension_box))
+    # Place the Combobox on the window
+    file_extension_box.pack(side=tk.RIGHT, padx=10)
 
     # Create widget frame for the following two buttons
     checkbox_frame = tk.Frame(root)
@@ -306,15 +325,15 @@ def main():
 
     # Create widget for opening the selected file's path
     open_path_button = tk.Button(button_frame, text="Open Path", command=lambda: open_path(result_listbox))
-    open_path_button.pack(side=tk.LEFT, padx=(5, 0))
+    open_path_button.pack(side=tk.LEFT, padx=(10, 0))
 
     # Create widget for quitting the program
     quit_button = tk.Button(root, text="Quit", command=root.quit)
-    quit_button.pack()
+    quit_button.pack(pady=(5, 0))
 
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
-    frame.pack(pady=10)
+    frame.pack(pady=5)
 
     # Create widget for displaying the license
     license_button = tk.Button(frame, text="View License", command=lambda: show_license(root))
@@ -322,7 +341,7 @@ def main():
 
     # Create widget for displaying the help
     help_button = tk.Button(frame, text="Help", command=lambda: show_help(root))
-    help_button.pack(side=tk.LEFT, padx=(5, 10))
+    help_button.pack(side=tk.LEFT, padx=(10, 10))
 
     # Create widget frame for the following two widgets
     frame = tk.Frame(root)
