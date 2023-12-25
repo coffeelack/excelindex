@@ -2,7 +2,11 @@
 
 # File Indexer - Help
 
-Welcome to the File Indexer application! This tool allows you to index a folder, search for different files, and their content.
+Welcome to the File Indexer application! This tool allows you to index a folder, 
+search for different files, and their content.
+
+The program is written in Python 3.11 and uses the following libraries:
+os, threding, tkinter, openpyxl, docx2txt, PyPDF2
 
 ## Prerequisites:
 
@@ -10,6 +14,25 @@ For the application to work properly, you need to have the following installed o
 
 Please select the **latest version of Python 3.11** for your operating system.
 https://www.python.org/downloads/
+
+NOTE: The application will not work with Python 3.10 or earlier versions or 3.12 of Python 3, only Python 3.11 will work.
+
+## Start the Application:
+
+### Windows:
+
+Execute the `windows_starter.bat` file to start the application.
+
+### Linux:
+
+Mark the `linux_starter.py` file as executable:
+
+      chmod +x linux_starter.py
+
+Execute the 'linux_starter.py' to start the application.
+
+      ./linux_starter.py
+
 
 ## Indexing a Folder:
 
@@ -45,4 +68,4 @@ Click the "Quit" button to exit the application.
 
 Note: Please ensure that you have proper permissions to access and modify the files in the indexed folder.
 
-For further assistance or inquiries, refer to the "View License" section or contact the author.
+For further assistance or inquiries, refer to the "View License" section or contact the author via GitHub.
