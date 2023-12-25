@@ -4,6 +4,13 @@
 
 Welcome to the File Indexer application! This tool allows you to index a folder, search for different files, and their content.
 
+## Prerequisites:
+
+For the application to work properly, you need to have the following installed on your system:
+
+Please select the **latest version of Python 3.11** for your operating system.
+https://www.python.org/downloads/
+
 ## Indexing a Folder:
 
 1. Select a file extension you want to index.
