@@ -1,3 +1,5 @@
+#!/usr/bin/env python3.11
+
 import os
 import tkinter as tk
 import threading
@@ -338,8 +340,9 @@ def main():
     root.minsize(265, 300)
     root.title("File Indexer")
 
-    # Set icon
-    root.iconbitmap('shell-icon.ico')
+    # Set icon if the OS is Windows
+    if os.name == 'nt':
+        root.iconbitmap('shell-icon.ico')
 
     # Create widget for path of indexed folder
     indexed_folder_label = tk.Label(root, text="")
