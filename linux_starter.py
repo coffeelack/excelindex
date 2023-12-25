@@ -4,7 +4,7 @@
 # File Indexer - A tool to index files and      #
 # search for files containing a search term     #
 #                                               #
-# © 2023 Gabriel Unsinn / Github: coffeelack    #
+# © 2023 Gabriel Unsinn / GitHub: coffeelack    #
 #################################################
 
 programmer_name = "Gabriel Unsinn"
