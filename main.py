@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.11
 
+# Import required libraries
 import os
 import tkinter as tk
 import threading
@@ -7,29 +8,25 @@ from tkinter import filedialog, messagebox, ttk
 
 # Install required libraries it not yet installed
 try:
-    import openpyxl
+    from openpyxl import load_workbook
     print("Package 'openpyxl' found, no need to install.")
-except ImportError:
+except ImportError or ModuleNotFoundError:
     print("openpyxl not found. Installing...")
     os.system("pip install openpyxl")
 
 try:
     import PyPDF2
     print("Package 'PyPDF2' found, no need to install.")
-except ImportError:
+except ImportError or ModuleNotFoundError:
     print("PyPDF2 not found. Installing...")
     os.system("pip install PyPDF2")
 
 try:
     from docx2txt import process
-    print("Package 'docx2txt' found, no need to install.")
-except ImportError:
+    print("Module 'process' in package 'docx2txt' found, no need to install.")
+except ImportError or ModuleNotFoundError:
     print("docx2txt not found. Installing...")
     os.system("pip install docx2txt")
-
-# Now you can import the installed libraries
-from openpyxl import load_workbook
-from docx2txt import process
 
 
 # Global variables
@@ -256,7 +253,21 @@ def open_file(result_listbox=None):
     selected_item = result_listbox.get(tk.ACTIVE)
     if selected_item:
         file_path = selected_item.split("|||  Path: ")[-1].strip()
-        os.startfile(file_path)
+        if os.name == 'nt':
+            os.startfile(file_path)
+        if os.name == 'posix':
+            # If fileending is .docx, open with LibreOffice
+            if file_path.endswith('.docx'):
+                os.system(f"libreoffice {file_path}")
+            # If fileending is .pdf, open with Evince
+            elif file_path.endswith('.pdf'):
+                os.system(f"evince {file_path}")
+            # If fileending is .xlsx, open with LibreOffice Calc
+            elif file_path.endswith('.xlsx'):
+                os.system(f"libreoffice --calc {file_path}")
+            # If fileending is .doc, open with LibreOffice Writer
+            elif file_path.endswith('.doc'):
+                os.system(f"libreoffice --writer {file_path}")
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open.")
 
@@ -265,7 +276,10 @@ def open_path(result_listbox):
     selected_item = result_listbox.get(tk.ACTIVE)
     if selected_item:
         file_path = selected_item.split("|||  Path: ")[-1].strip()
-        os.startfile(os.path.dirname(file_path))
+        if os.name == 'nt':
+            os.startfile(os.path.dirname(file_path))
+        if os.name == 'posix':
+            os.system(f"xdg-open {os.path.dirname(file_path)}")
     else:
         messagebox.showinfo("No File Selected", "Please select a file to open the path.")
 
