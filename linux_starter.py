@@ -1,5 +1,18 @@
 #!/usr/bin/env python3.11
 
+#################################################
+# File Indexer - A tool to index files and      #
+# search for files containing a search term     #
+#                                               #
+# © 2023 Gabriel Unsinn / Github: coffeelack    #
+#################################################
+
+programmer_name = "Gabriel Unsinn"
+program_version = "1.3"
+program_year = "2023"
+program_github = "https://github.com/coffeelack"
+
+
 # Import required libraries
 import os
 import tkinter as tk
@@ -292,7 +305,7 @@ def show_license(root):
 
     You have the following freedoms:
 
-    Use the software for any lawful purpose, including commercial.
+    Use the software for any lawful purpose, including commercial, as long as it permittet by the used libraries.
     Change and adapt the software.
     Pass on the software.
 
@@ -307,11 +320,11 @@ def show_license(root):
     A notice: This License applies solely to the Software and does not affect any other portion of your project not 
     covered by this License.
 
-    For a detailed version of the license terms, please visit the official page of the Creative Commons license 
-    CC-BY-NC-SA 4.0.
+    For a detailed version of the license terms, please visit the official page of the Creative Commons license:
+    https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.en
 
-    © 2023 Gabriel Unsinn / Github: https://github.com/coffeelack
-    """
+    © """ + program_year + " " + programmer_name + " / Github: " + program_github
+
     license_window = tk.Toplevel(root)
     license_window.title("License")
     license_label = tk.Label(license_window, text=license_text, justify=tk.LEFT)
@@ -353,10 +366,11 @@ def show_help(root):
     Click the "Quit" button to exit the application.
     Note: Please ensure that you have proper permissions to access and modify the files in the indexed folder.
 
-    For further assistance or inquiries, refer to the "View License" section or contact the author.
+    For further assistance or inquiries cause of problems, 
+    refer to the "Help" and "License " section or contact the author.
 
-    © 2023 Gabriel Unsinn / Github: https://github.com/coffeelack
-    """
+    © """ + program_year + " " + programmer_name + " / Github: " + program_github
+
     help_window = tk.Toplevel(root)
     help_window.title("Help")
     help_label = tk.Label(help_window, text=help_text, justify=tk.LEFT)
@@ -485,11 +499,11 @@ def main():
     frame.pack(pady=5)
 
     # Create widget for displaying the version number
-    version_label = tk.Label(frame, text="File Indexer V1.2")
+    version_label = tk.Label(frame, text=f"File Indexer V{program_version}")
     version_label.pack(side=tk.LEFT, pady=(1, 1))
 
     # Create widget for displaying the name of the author
-    name_label = tk.Label(frame, text="© 2023 Gabriel Unsinn")
+    name_label = tk.Label(frame, text=f"© {program_year} {programmer_name}")
     name_label.pack(side=tk.LEFT)
 
     # Initialize variables
