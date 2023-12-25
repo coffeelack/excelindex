@@ -4,9 +4,33 @@ import os
 import tkinter as tk
 import threading
 from tkinter import filedialog, messagebox, ttk
+
+# Install required libraries it not yet installed
+try:
+    import openpyxl
+    print("Package 'openpyxl' found, no need to install.")
+except ImportError:
+    print("openpyxl not found. Installing...")
+    os.system("pip install openpyxl")
+
+try:
+    import PyPDF2
+    print("Package 'PyPDF2' found, no need to install.")
+except ImportError:
+    print("PyPDF2 not found. Installing...")
+    os.system("pip install PyPDF2")
+
+try:
+    from docx2txt import process
+    print("Package 'docx2txt' found, no need to install.")
+except ImportError:
+    print("docx2txt not found. Installing...")
+    os.system("pip install docx2txt")
+
+# Now you can import the installed libraries
 from openpyxl import load_workbook
-import PyPDF2
 from docx2txt import process
+
 
 # Global variables
 global indexed_folder, indexed_files, indexed_dirs, result_label, search_entry, search_inside_files, \
