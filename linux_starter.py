@@ -517,5 +517,4 @@ def main():
 
 # Entry point of the program
 if __name__ == "__main__":
-    thread_main = threading.Thread(target=main)
-    thread_main.start()
+    main()
