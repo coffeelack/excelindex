@@ -13,6 +13,7 @@ os, threding, tkinter, openpyxl, docx2txt, PyPDF2
 For the application to work properly, you need to have the following installed on your system:
 
 Please select the **latest version of Python 3.11** for your operating system.
+While installing Python, make sure to check the box that says **"Add Python to PATH"**.
 https://www.python.org/downloads/
 
 NOTE: The application will not work with Python 3.10 or earlier versions or 3.12 of Python 3, only Python 3.11 will work.

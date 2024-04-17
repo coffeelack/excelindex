@@ -1,2 +1,2 @@
 @echo off
-python main.py -v 3.11
+python linux_starter.py -v 3.11
