@@ -38,7 +38,7 @@ Execute the 'linux_starter.py' to start the application.
 ## Indexing a Folder:
 
 1. Select a file extension you want to index.
-2. Click the "Index Folder" button.
+2. Click the "Select Folder" button.
 3. Select the folder you want to index.
 4. The application will recursively count the number of files and directories inside the selected folder.
 

@@ -342,7 +342,7 @@ def show_help(root):
 
     Indexing a Folder:
 
-    Click the "Index Folder" button.
+    Click the "Select Folder" button.
     Select the folder you want to index.
     The application will recursively count the number of files and directories inside the selected folder.
     Searching for Files:
@@ -415,7 +415,7 @@ def main():
     file_extension_box.pack(side=tk.LEFT, padx=10)
 
     # Create widget for indexing and searching
-    index_button = tk.Button(frame, text="Index Folder", command=lambda: index_folder(root))
+    index_button = tk.Button(frame, text="Select Folder", command=lambda: index_folder(root))
     index_button.pack(side=tk.LEFT, padx=10)
 
     # Create widget for displaying the result of the indexing
