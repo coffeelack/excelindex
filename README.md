@@ -1,4 +1,4 @@
-© 2023 Gabriel Unsinn / Github: [https://github.com/coffeelack](https://github.com/coffeelack/excelindex)
+© 2024 Gabriel Unsinn / Github: [https://github.com/coffeelack](https://github.com/coffeelack/excelindex)
 
 # File Indexer - Help
 
@@ -6,7 +6,7 @@ Welcome to the File Indexer application! This tool allows you to index a folder,
 search for different files, and their content.
 
 The program is written in Python 3.11 and uses the following libraries:
-os, threding, tkinter, openpyxl, docx2txt, PyPDF2
+os, threading, tkinter, openpyxl, docx2txt, PyPDF2
 
 ## Prerequisites:
 
