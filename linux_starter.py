@@ -8,8 +8,8 @@
 #################################################
 
 programmer_name = "Gabriel Unsinn"
-program_version = "1.3"
-program_year = "2023"
+program_version = "1.3.1"
+program_year = "2024"
 program_github = "https://github.com/coffeelack"
 
 
